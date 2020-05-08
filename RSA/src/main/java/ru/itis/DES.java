@@ -1,21 +1,6 @@
 package ru.itis;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.IntStream;
-
 public class DES {
-
-    private String prevRoundTextR = "";
-    private String prevRoundText = "";
-    private String prevRoundKey = "";
-
-    List<String> keyList = new ArrayList<>();
-    List<String> textList = new ArrayList<>();
-
-    // CONSTANTS
-    // Initial Permutation Table
     int[] IP = {58, 50, 42, 34, 26, 18,
             10, 2, 60, 52, 44, 36, 28, 20,
             12, 4, 62, 54, 46, 38,
@@ -27,7 +12,6 @@ public class DES {
             37, 29, 21, 13, 5, 63, 55,
             47, 39, 31, 23, 15, 7};
 
-    // Inverse Initial Permutation Table
     int[] IP1 = {40, 8, 48, 16, 56, 24, 64,
             32, 39, 7, 47, 15, 55,
             23, 63, 31, 38, 6, 46,
@@ -40,7 +24,6 @@ public class DES {
             26, 33, 1, 41, 9, 49,
             17, 57, 25};
 
-    // first key-hePermutation Table
     int[] PC1 = {57, 49, 41, 33, 25,
             17, 9, 1, 58, 50, 42, 34, 26,
             18, 10, 2, 59, 51, 43, 35, 27,
@@ -50,7 +33,6 @@ public class DES {
             53, 45, 37, 29, 21, 13, 5, 28,
             20, 12, 4};
 
-    // second key-Permutation Table
     int[] PC2 = {14, 17, 11, 24, 1, 5, 3,
             28, 15, 6, 21, 10, 23, 19, 12,
             4, 26, 8, 16, 7, 27, 20, 13, 2,
@@ -58,7 +40,6 @@ public class DES {
             51, 45, 33, 48, 44, 49, 39, 56,
             34, 53, 46, 42, 50, 36, 29, 32};
 
-    // Expansion D-box Table
     int[] EP = {32, 1, 2, 3, 4, 5, 4,
             5, 6, 7, 8, 9, 8, 9, 10,
             11, 12, 13, 12, 13, 14, 15,
@@ -67,7 +48,6 @@ public class DES {
             24, 25, 26, 27, 28, 29, 28,
             29, 30, 31, 32, 1};
 
-    // Straight Permutation Table
     int[] P = {16, 7, 20, 21, 29, 12, 28,
             17, 1, 15, 23, 26, 5, 18,
             31, 10, 2, 8, 24, 14, 32,
@@ -110,6 +90,7 @@ public class DES {
                     {7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8},
                     {2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11}}
     };
+
     int[] shiftBits = {1, 1, 2, 2, 2, 2, 2, 2,
             1, 2, 2, 2, 2, 2, 2, 1};
 
@@ -226,38 +207,14 @@ public class DES {
                 + " " + left.toUpperCase() + " "
                 + key.toUpperCase());
 
-        if(prevRoundText.equals("") && prevRoundKey.equals("")) {
-            prevRoundKey = strToBinary(key.toUpperCase());
-            prevRoundText = strToBinary(left.toUpperCase()) + strToBinary(right.toUpperCase());
-        }
-
-        keyList.add("Round "
-                + (num + 1) + " "
-                + diffCount(prevRoundKey, strToBinary(key.toUpperCase())));
-        prevRoundKey = strToBinary(key.toUpperCase());
-
-        textList.add("Round "
-                + (num + 1) + " "
-                + diffCount(prevRoundText, strToBinary(left.toUpperCase()) + strToBinary(right.toUpperCase())));
-        prevRoundText = strToBinary(left.toUpperCase()) + strToBinary(right.toUpperCase());
-
         // swapper
         return right + left;
     }
 
-    String diffCount(String str1, String str2) {
-        int diffCount = (int) IntStream.range(0, Math.min(str1.length(), str2.length()))
-                .filter(i -> str1.charAt(i) != str2.charAt(i)) // corresponding characters from both the strings
-                .count();
-        diffCount += Math.abs(str1.length() - str2.length());
-        return String.valueOf(diffCount);
-    }
-
-    String encrypt(String plainText, String key) {
+    Result encrypt(String plainText, String key) {
         int i;
         // get round keys
         String keys[] = getKeys(key);
-
 
         // initial permutation
         plainText = permutation(IP, plainText);
@@ -281,7 +238,10 @@ public class DES {
 
         // final permutation
         plainText = permutation(IP1, plainText);
-        return plainText;
+        return Result.builder()
+                .text(plainText)
+                .key(keys[15])
+                .build();
     }
 
     String decrypt(String plainText, String key) {
@@ -310,102 +270,5 @@ public class DES {
                 + plainText.substring(0, 8);
         plainText = permutation(IP1, plainText);
         return plainText;
-    }
-
-    // utility function
-    String strToBinary(String s) {
-        int n = s.length();
-        StringBuilder result = new StringBuilder();
-
-        for (int i = 0; i < n; i++) {
-            // convert each char to
-            // ASCII value
-            int val = (int) s.charAt(i);
-
-            // Convert ASCII value to binary
-            String bin = "";
-            while (val > 0) {
-                if (val % 2 == 1) {
-                    bin += '1';
-                } else
-                    bin += '0';
-                val /= 2;
-            }
-            bin = reverse(bin);
-
-            result.append(bin);
-        }
-
-        return String.valueOf(result);
-    }
-
-    String reverse(String input) {
-        char[] a = input.toCharArray();
-        int l, r = 0;
-        r = a.length - 1;
-
-        for (l = 0; l < r; l++, r--) {
-            // Swap values of l and r
-            char temp = a[l];
-            a[l] = a[r];
-            a[r] = temp;
-        }
-        return String.valueOf(a);
-    }
-
-    /*public static String binaryToString(String binary) {
-        StringBuilder s = new StringBuilder();
-        StringBuilder st = new StringBuilder(binary);
-        if(st.charAt(7) == '0') {
-            st.replace(7,7, "1");
-        } else {
-            st.replace(7,7, "0");
-        }
-        for(int index = 0; index < st.length() - 1; index+=8) {
-            String temp = st.substring(index, index+8);
-            int num = Integer.parseInt(temp,2);
-            char letter = (char) num;
-            s.append(letter);
-        }
-        return s.toString();
-    }*/
-
-    public static void main(String args[]) {
-        /*String text = "123456ABCD132536";
-        String key = "AABB09182736CCDD";*/
-        String text = "123456ABCD032536";
-        String key = "AABB09082736CCDD";
-
-        DES cipher = new DES();
-
-        System.out.println("Encryption:\n");
-        text = cipher.encrypt(text, key);
-        System.out.println(
-                "\nCipher Text: " + text.toUpperCase() + "\n");
-        System.out.println("Decryption\n");
-        text = cipher.decrypt(text, key);
-        System.out.println(
-                "\nPlain Text: "
-                        + text.toUpperCase());
-
-        BufferedWriter writer_key = null;
-        BufferedWriter writer_text = null;
-        try {
-            writer_key = new BufferedWriter(new FileWriter("rounds_key_kt.txt"));
-            writer_text = new BufferedWriter(new FileWriter("rounds_text_kt.txt"));
-
-            for (int i = 0; i < cipher.keyList.size(); i++) {
-                writer_key.write(cipher.keyList.get(i) + "\n");
-            }
-            for (int i = 0; i < cipher.textList.size(); i++) {
-                writer_text.write(cipher.textList.get(i) + "\n");
-            }
-
-            writer_key.close();
-            writer_text.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 }
