@@ -3,8 +3,6 @@ package ru.itis;
 import lombok.Data;
 
 import java.math.BigInteger;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
 
 @Data
@@ -42,11 +40,4 @@ public class RSA {
         s += "modulus = " + modulus;
         return s;
     }
-
-    public static KeyPair getKeyPairByAuto(int keySize) throws Exception {
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(keySize);
-        return keyPairGenerator.generateKeyPair();
-    }
 }
-

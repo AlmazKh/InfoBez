@@ -3,11 +3,7 @@ package ru.itis;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.Map;
-import java.util.Scanner;
 
 public class MainDESStore {
     private static final File keyFile = new File("src/main/resources/lavina/public.txt");
@@ -68,16 +64,5 @@ public class MainDESStore {
                 textWriter.write(after + "\n");
             }
         }
-    }
-
-    public static String binaryToString(String binary) {
-        String s = "";
-        for (int index = 0; index < binary.length(); index += 8) {
-            String temp = binary.substring(index, index + 8);
-            int num = Integer.parseInt(temp, 2);
-            char letter = (char) num;
-            s = s + letter;
-        }
-        return s;
     }
 }
