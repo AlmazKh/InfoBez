@@ -9,13 +9,16 @@ public class SecondGenerator {
         String carp = "carp";
         String shuck = "shuck";
         StringBuilder password = new StringBuilder();
-        char let12;
+        char let1;
+        char let2;
         if(shuck.charAt(0) == 'z') {
-            let12 = 'a';
+            let1 = 'a';
+            let2 = 'b';
         } else {
-            let12 = (char)((int) shuck.charAt(0) + 1);
+            let1 = (char)((int) shuck.charAt(0) + 1);
+            let2 = (char)((int) shuck.charAt(0) + 2);
         }
-        password.append(let12).append(let12);
+        password.append(let1).append(let2);
 
         char let3;
         if(carp.charAt(2) == 'a') {
