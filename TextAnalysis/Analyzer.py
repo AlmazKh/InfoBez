@@ -11,6 +11,14 @@ def read_file(file_name):
     if file_name == "14-1.txt":
         file = open(file_name, "r")
     data = file.read()
+    sorted_letters = get_sorted_count_of_letters(data)
+    w = open(file_name + "_analyzed", "w")
+    for k, v in sorted_letters.items():
+        s = "'" + str(k) + "'" + " : " + str(v) + "\n"
+        w.write(s)
+
+
+def get_sorted_count_of_letters(data):
     letters = dict()
     for i in range(len(data)):
         if data[i] == "\n":
@@ -20,10 +28,7 @@ def read_file(file_name):
         else:
             letters[data[i]] += 1
     sorted_letters = {k: v for k, v in sorted(letters.items(), key=lambda it_: it_[1], reverse=True)}
-    w = open(file_name + "_analyzed", "w")
-    for k, v in sorted_letters.items():
-        s = "'" + str(k) + "'" + " : " + str(v) + "\n"
-        w.write(s)
+    return sorted_letters
 
 
 def get_encoding_info(file):
@@ -37,7 +42,7 @@ def get_encoding_info(file):
     print(detector.result)
 
 
-def create_key():
+def create_key_and_decode_6():
     str1 = "Сжг ьвфаф Фбфефвжф э вщ ёэарвг цгавгцфафёр дг зйгшщ ёздезчф. Гвф жгаряг цьшгйвзаф э деэвуафёр зжщмфжр " \
            "ёщху. Гхпявгцщввг дгёащ лфёжпй ёёге ё бзыщб гвф зжщмфаф ёщху лжщвэщб ёжфегчг чфьщжвгчг аэёжяф, " \
            "ягжгепю йефвэаёу з вщщ ц ыщёжувгю ягегхглящ эь-дгш бгвдфвёрщ, еушгб ё яегмщлвгю хзжпаглягю эь-дгш шзйгц. " \
@@ -86,6 +91,32 @@ def create_key():
     print(decoded, file=w)
 
 
+def decode_14():
+    data14 = get_sorted_count_of_letters(open("14-1.txt").read())
+    data_eng = get_sorted_count_of_letters(open("eng.txt").read())
+    text_key = dict()
+
+    s1 = 0
+    for key_14 in data14.keys():
+        s2 = 0
+        for key_eng in data_eng.keys():
+            if s1 == s2:
+                text_key[key_14] = key_eng
+                break
+            s2 += 1
+        s1 += 1
+
+    decoded = ""
+    data = open("14-1.txt").read()
+    for i in range(len(data)):
+        if data[i] in text_key.keys():
+            decoded += text_key[data[i]]
+        else:
+            decoded += data[i]
+    w = open("14-1.txt_decrypted", "w")
+    print(decoded, file=w)
+
+
 # read_file("eng.txt")
 # read_file("rus.txt")
 # read_file("6-1.txt")
@@ -95,7 +126,9 @@ get_encoding_info("14-1.txt")
 get_encoding_info("6-1.txt_analyzed")
 get_encoding_info("14-1.txt")
 
-create_key()
-
+decode_14()
+get_encoding_info("14-1.txt_decrypted")
+# create_key_and_decode_6()
+#
 # 6-1.txt А.П. Чехов "Жены артистов" http://chehov-lit.ru/chehov/text/zheny-artistov.htm
 
