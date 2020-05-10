@@ -6,8 +6,8 @@ import java.io.FileWriter;
 import java.util.Map;
 
 public class MainDESStore {
-    private static final File keyFile = new File("src/main/resources/lavina/public.txt");
-    private static final File textFile = new File("src/main/resources/lavina/private.txt");
+    private static final File keyFile = new File("src/main/resources/lavina/key.txt");
+    private static final File textFile = new File("src/main/resources/lavina/text.txt");
 
     public static void main(String[] args) throws Exception {
         String text = "1B5456AB4713D53D";
